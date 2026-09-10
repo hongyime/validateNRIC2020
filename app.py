@@ -14,8 +14,16 @@ def index():
 
 @app.route('/validate', methods=['POST'])
 def validate():
-    data = request.json
-    nric = data.get('nric', '').upper()
+    data = request.get_json(silent=True)
+    if not isinstance(data, dict):
+        return jsonify(valid=False, message='Request must contain a JSON object.',
+                       barcode=None, expected=None), 400
+
+    nric = data.get('nric', '')
+    if not isinstance(nric, str):
+        return jsonify(valid=False, message='NRIC must be a string.',
+                       barcode=None, expected=None), 400
+    nric = nric.upper()
     
     validation_result = validate_nric(nric)
     

@@ -45,6 +45,25 @@ python checksumv2.py
 
 Enter the first 8 characters of the NRIC (prefix + 7 digits) to calculate the correct last letter.
 
+## Web API and regression checks
+
+The Flask app in `app.py` serves the web interface and `POST /validate`.
+Send a JSON object with a text `nric` field. Malformed JSON, non-object bodies,
+and non-text identifiers return HTTP 400 with a JSON error, including
+`valid: false` and `barcode: null`. Ordinary checksum-validation results,
+including empty or invalid text, continue to return HTTP 200. A matching
+checksum returns the generated barcode in memory; this does not verify an
+identifier against an identity registry.
+
+Install `requirements.txt`, then run the API regression checks:
+
+```bash
+python -B -m unittest discover -s tests -v
+```
+
+The checks use synthetic input and cover malformed requests, existing
+validation responses and barcode generation.
+
 ## Disclaimer
 
 1. FOR EDUCATIONAL PURPOSES ONLY
