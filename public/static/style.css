@@ -1,0 +1,496 @@
+html {
+    height: 100%;
+    background-color: #f3f4f6;
+    overflow: hidden;
+}
+
+:root {
+    --bg-color: #f3f4f6;
+    /* Light Grey */
+    --card-bg: #ffffff;
+    /* White */
+    --text-color: #1f2937;
+    /* Dark Grey */
+    --muted-color: #9ca3af;
+    /* Silver/Grey */
+    --wheel-bg: #e5e7eb;
+    /* Light Grey for unselected */
+    --selected-bg: #d1d5db;
+    /* Slightly darker for selection */
+    --success-color: #10b981;
+    /* Green (kept for valid state) */
+    --error-color: #ef4444;
+    /* Red (kept for error) */
+    --accent-color: #374151;
+    /* Dark Grey Accent */
+}
+
+body {
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    font-family: 'Inter', sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+    min-height: 100%;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    /* Hide scrollbar */
+}
+
+.container {
+    background-color: var(--card-bg);
+    padding: 2rem;
+    border-radius: 24px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
+    text-align: center;
+    max-width: 700px;
+    width: 95%;
+    border: 1px solid #e5e7eb;
+}
+
+.logo-container {
+    margin-bottom: 1.5rem;
+}
+
+.logo {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    filter: grayscale(100%);
+    /* Make logo monochromatic */
+}
+
+h1 {
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+    color: var(--text-color);
+    font-size: 2rem;
+}
+
+p.subtitle {
+    color: var(--muted-color);
+    margin-bottom: 2rem;
+}
+
+/* Padding to center first/last items: (Container 150 - Item 40) / 2 = 55px */
+.wheel-padding {
+    height: 55px;
+    width: 100%;
+    flex-shrink: 0;
+}
+
+/* Wheel Component Styles */
+.wheel-group-container {
+    display: flex;
+    justify-content: center;
+    height: 150px;
+    /* Visible height (approx 3 items) */
+    overflow: hidden;
+    position: relative;
+    background: linear-gradient(to bottom, #ffffff 0%, rgba(255, 255, 255, 0) 20%, rgba(255, 255, 255, 0) 80%, #ffffff 100%);
+    border-radius: 12px;
+    border: none;
+    /* No border - cleaner look */
+    margin-bottom: 2rem;
+    background-color: #f9fafb;
+}
+
+.selection-overlay {
+    position: absolute;
+    top: 50%;
+    left: 0;
+    right: 0;
+    height: 40px;
+    /* Height of one item */
+    margin-top: -20px;
+    background-color: rgba(0, 0, 0, 0.04);
+    pointer-events: none;
+    border-top: 1px solid #e5e7eb;
+    border-bottom: 1px solid #e5e7eb;
+    z-index: 10;
+}
+
+.wheel-column {
+    width: 40px;
+    height: 100%;
+    overflow-y: scroll;
+    scroll-snap-type: y mandatory;
+    scrollbar-width: none;
+    /* Firefox */
+    -ms-overflow-style: none;
+    /* IE 10+ */
+    position: relative;
+    z-index: 5;
+    text-align: center;
+}
+
+.wheel-column::-webkit-scrollbar {
+    display: none;
+    /* Chrome Safari */
+}
+
+.manual-input {
+    width: 40px !important;
+    min-width: 40px !important;
+    max-width: 40px !important;
+    flex: 0 0 40px !important;
+    height: 40px !important;
+    /* SQUARE */
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+    text-align: center;
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: var(--text-color);
+    background: white;
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.wheel-item {
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: var(--muted-color);
+    scroll-snap-align: center;
+    cursor: pointer;
+    transition: color 0.2s, transform 0.2s;
+}
+
+/* Highlight center item (handled by JS via intersection observer usually, or just visually by position) 
+   But pure CSS specific highlighting in a scroll container is checking 'scroll-snap-align'. 
+   We will depend on JS to add a class 'active' for perfect styling if needed, 
+   but for now let's use the overlay to indicate selection.
+*/
+
+/* (Container Height - Item Height) / 2 = (150 - 40) / 2 = 55 */
+
+
+.wheel-wrapper {
+    position: relative;
+    width: 40px;
+    height: 100%;
+    margin: 0 2px;
+    /* Slight spacing between wheels if needed, or 0 */
+}
+
+.hybrid-input {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 100%;
+    height: 40px;
+    background: transparent;
+    border: none;
+    /* User might want a border? "input boxes will still be there" */
+    /* Let's give a subtle border that appears on hover/focus or always? */
+    /* To mimic "OTP input boxes", let's make them look like boxes. */
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    border-radius: 4px;
+
+    text-align: center;
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: transparent;
+    /* Keep transparent to show wheel behind? */
+    /* If I add a border/background, it might obscure the wheel. */
+    /* If I make it transparent, seeing the wheel is good. */
+    /* BUT if user focuses, maybe we show the text? */
+    /* User said "input should be overlayed... so user can scroll... or tap inside... to manually type" */
+    /* "merge the 2 design" */
+
+    color: transparent;
+    caret-color: var(--text-color);
+    outline: none;
+    z-index: 20;
+    /* Above wheel */
+    padding: 0;
+    margin: 0;
+}
+
+.hybrid-input:focus {
+    color: var(--text-color);
+    /* Show text when typing */
+    background: var(--card-bg);
+    /* Opaque background when focused to read clearly? */
+    border-color: var(--text-color);
+    box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.1);
+}
+
+.hybrid-input::selection {
+    background: rgba(0, 0, 0, 0.1);
+}
+
+
+/* Media query adjustment for input width too */
+@media (max-width: 500px) {
+    .wheel-wrapper {
+        width: 32px;
+    }
+
+    .hybrid-input {
+        font-size: 1rem;
+    }
+}
+
+.action-button {
+    background-color: var(--text-color);
+    color: white;
+    border: none;
+    padding: 12px 30px;
+    font-size: 1rem;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.2s, transform 0.1s;
+    font-weight: 600;
+    width: 100%;
+    max-width: 200px;
+}
+
+.action-button:hover {
+    background-color: #374151;
+    /* Lighter grey */
+    transform: translateY(-2px);
+}
+
+.action-button:active {
+    transform: translateY(0);
+}
+
+#result-container {
+    margin-top: 2rem;
+    min-height: 100px;
+}
+
+.status-message {
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+}
+
+.valid-text {
+    color: var(--success-color);
+}
+
+.invalid-text {
+    color: var(--error-color);
+}
+
+.barcode-wrapper {
+    margin-top: 1rem;
+    padding: 10px;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    background: white;
+    display: inline-block;
+}
+
+.barcode-wrapper img {
+    max-width: 100%;
+    height: auto;
+    filter: grayscale(100%);
+    /* Monochromatic barcode */
+}
+
+/* Tab Navigation */
+.tab-container {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    margin-bottom: 2rem;
+    background: #e5e7eb;
+    padding: 4px;
+    border-radius: 12px;
+    display: inline-flex;
+    /* Contain it */
+}
+
+.tab-button {
+    background: transparent;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 8px;
+    font-weight: 600;
+    color: var(--muted-color);
+    cursor: pointer;
+    transition: all 0.2s;
+    font-size: 0.9rem;
+}
+
+.tab-button.active {
+    background: white;
+    color: var(--text-color);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.barcode-active-display {
+    display: none;
+    position: absolute;
+    /* Take over the container space */
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    align-items: center;
+    justify-content: center;
+    background: var(--card-bg);
+    /* Match card background */
+    z-index: 20;
+    border-radius: 12px;
+    /* Match container border radius */
+}
+
+/* Constrains the barcode to fit in the input area */
+.input-view {
+    position: relative;
+    min-height: 160px;
+    /* Match the wheel height */
+}
+
+#wheelGroup {
+    position: relative;
+}
+
+.barcode-active-display img {
+    width: auto;
+    height: auto;
+    max-width: 90%;
+    max-height: 90%;
+    object-fit: contain;
+    /* Use a dark filter if needed, but python-barcode usually outputs black bars */
+}
+
+/* Ensure manual container has height when barcode is shown */
+.manual-group-container {
+    display: flex;
+    justify-content: center;
+    gap: 0.5rem;
+    margin-bottom: 2rem;
+    position: relative;
+    min-height: 150px;
+    /* Match wheel height for consistency */
+    align-items: center;
+    flex-wrap: nowrap;
+}
+
+@media (max-width: 450px) {
+    .manual-input {
+        /* Calculate width: (viewport - container padding - gaps) / 9 inputs */
+        /* 100vw - 32px padding - 16px gaps (8 * 2px) = available space / 9 */
+        --input-width: calc((100vw - 48px) / 9);
+        width: var(--input-width) !important;
+        min-width: var(--input-width) !important;
+        max-width: var(--input-width) !important;
+        flex: 0 0 var(--input-width) !important;
+        height: 44px !important;
+        font-size: clamp(0.85rem, 3vw, 1.1rem);
+        border-radius: 6px;
+        padding: 0 !important;
+    }
+
+    .manual-group-container {
+        gap: 2px;
+        min-height: 120px;
+        padding: 0 16px;
+        box-sizing: border-box;
+        width: 100%;
+    }
+
+    /* Fill the entire viewport on mobile - no visible card box */
+    html,
+    body {
+        background-color: var(--card-bg);
+    }
+
+    .container {
+        padding: 1.5rem 1rem;
+        width: 100%;
+        border-radius: 0;
+        max-height: 100vh;
+        box-shadow: none;
+        border: none;
+    }
+
+    h1 {
+        font-size: 1.5rem;
+    }
+
+    p.subtitle {
+        font-size: 0.85rem;
+        margin-bottom: 1rem;
+    }
+
+    .logo-container img {
+        width: 50px;
+        height: 50px;
+    }
+
+    .logo-container {
+        margin-bottom: 0.75rem;
+    }
+
+    .wheel-group-container {
+        height: 120px;
+        margin-bottom: 1rem;
+    }
+
+    .action-button {
+        padding: 10px 40px;
+        font-size: 0.9rem;
+    }
+
+    .tab-button {
+        padding: 6px 12px;
+        font-size: 0.8rem;
+    }
+
+    .tab-container {
+        margin-bottom: 1rem;
+    }
+}
+
+/* Extra small screens */
+@media (max-height: 600px) {
+    .container {
+        padding: 0.5rem;
+    }
+
+    h1 {
+        font-size: 1.3rem;
+        margin-bottom: 0.25rem;
+    }
+
+    p.subtitle {
+        margin-bottom: 0.5rem;
+        font-size: 0.8rem;
+    }
+
+    .logo-container {
+        margin-bottom: 0.5rem;
+    }
+
+    .logo-container img {
+        width: 40px;
+        height: 40px;
+    }
+
+    .wheel-group-container {
+        height: 100px;
+        margin-bottom: 0.5rem;
+    }
+
+    .wheel-item {
+        line-height: 30px;
+        height: 30px;
+    }
+
+    .action-button {
+        padding: 8px 30px;
+        margin-top: 0.5rem;
+    }
+}

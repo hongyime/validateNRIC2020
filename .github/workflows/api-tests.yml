@@ -10,6 +10,7 @@ on:
       - build_assets.py
       - vercel.json
       - static/**
+      - public/static/**
       - templates/**
       - tests/**
       - .github/workflows/api-tests.yml
@@ -22,6 +23,7 @@ on:
       - build_assets.py
       - vercel.json
       - static/**
+      - public/static/**
       - templates/**
       - tests/**
       - .github/workflows/api-tests.yml
@@ -45,4 +47,5 @@ jobs:
           cache: pip
       - run: python -m pip install -r requirements.txt
       - run: python -B build_assets.py
+      - run: git diff --exit-code -- public/static
       - run: python -B -m unittest discover -s tests -v
