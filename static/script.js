@@ -207,7 +207,6 @@ document.addEventListener('DOMContentLoaded', () => {
     // 3. Manual Input Type -> Update Wheel
     manualInputs.forEach(mInput => {
         mInput.addEventListener('input', (e) => {
-            console.log('Manual input triggered:', mInput.getAttribute('data-index'), e.target.value); // DEBUG
 
             e.target.value = e.target.value.toUpperCase(); // Force upper
             const val = e.target.value;
@@ -239,7 +238,6 @@ document.addEventListener('DOMContentLoaded', () => {
             if (val && !isNaN(index) && index < 8) {
                 const nextIndex = index + 1;
                 const next = document.querySelector(`.manual-input[data-index="${nextIndex}"]`);
-                console.log('Trying to focus next:', nextIndex, next); // DEBUG
                 if (next) next.focus();
             }
         });
@@ -303,7 +301,6 @@ document.addEventListener('DOMContentLoaded', () => {
         // Collect NRIC
         let nric = collectNRIC();
 
-        console.log("Validating NRIC:", nric);
 
         if (nric.length !== 9) {
             // Should not happen with fixed wheels, but good sanity check

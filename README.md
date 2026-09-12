@@ -64,6 +64,20 @@ python -B -m unittest discover -s tests -v
 The checks use synthetic input and cover malformed requests, existing
 validation responses and barcode generation.
 
+### Static delivery and privacy
+
+`python build_assets.py` copies the existing assets into `public/static/`
+for Vercel's CDN. Vercel runs this command before deployment; Flask development
+continues to use `static/`. Generated copies are ignored by Git. The same
+asset URLs work in both environments, and the source images remain unchanged.
+
+The script URL is stable across page loads. Default conditional cache
+revalidation lets a browser reuse unchanged bytes and receive changed scripts
+after a deployment; these URLs are not marked immutable. Validation responses
+are not included in the static cache. Browser debug logs no longer print
+entered identifiers or individual input characters. Manual entry, wheel input,
+checksum validation and barcode generation keep their existing behavior.
+
 ## Disclaimer
 
 1. FOR EDUCATIONAL PURPOSES ONLY
