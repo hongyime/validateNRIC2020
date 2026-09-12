@@ -39,5 +39,3 @@ skills/
 skills-lock.json
 docs/
 # End AI / editor dot directories (managed via sourcerepo)
-# Vercel build output; original assets remain in static/.
-/public/static/

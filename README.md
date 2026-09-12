@@ -67,8 +67,10 @@ validation responses and barcode generation.
 ### Static delivery and privacy
 
 `python build_assets.py` copies the existing assets into `public/static/`
-for Vercel's CDN. Vercel runs this command before deployment; Flask development
-continues to use `static/`. Generated copies are ignored by Git. The same
+for Vercel's CDN. The generated copies are committed so Vercel discovers them
+when it plans the deployment. Regenerate and commit them when changing assets;
+CI rejects copies that differ from their source. Vercel also runs this command
+before deployment. Flask development continues to use `static/`. The same
 asset URLs work in both environments, and the source images remain unchanged.
 
 The script URL is stable across page loads. Default conditional cache
