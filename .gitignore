@@ -5,6 +5,13 @@
 
 
 
+
+# Python compiled files
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
 # AI / editor dot directories (managed via sourcerepo)
 .*
 !.github/
@@ -40,9 +47,3 @@ skills/
 skills-lock.json
 docs/
 # End AI / editor dot directories (managed via sourcerepo)
-
-# Python compiled files
-__pycache__/
-*.pyc
-*.pyo
-*.pyd
